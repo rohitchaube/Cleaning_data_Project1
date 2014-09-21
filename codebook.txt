@@ -1,0 +1,76 @@
+Project - Creating an independent tidy data set with the average of each variable for each activity and each subject.
+
+The run_analysis R script involves no input parameters
+We perform the following actions 
+
+1. Reading Data From the files  
+
+Test Data 
+read_x_test_data <- read.table("./UCI HAR Dataset/test/X_test.txt")
+
+Train Data 
+read_x_train_data <- read.table("./UCI HAR Dataset/train/X_train.txt")
+
+
+Combine data from train_data and test_data
+combine_data <- rbind(train_data, test_data)
+
+
+Renaming combine_data column names from features.txt file 
+read_features_data <- read.table("./UCI HAR Dataset/features.txt")
+
+## Save Features data in feature_vec vector 
+feature_vec <- read_features_data[,2]
+
+## Update the all_data column names with the feature_vec 
+colnames(combine_data) <- feature_vec
+
+
+
+2. Extracts only the measurements on the mean and standard deviation for each measurement. 
+
+Extracting Mean Data 
+subset_mean_data <- combine_data[, grep("mean", colnames(combine_data), value=TRUE)]
+
+Extracting - Standard Deviation 
+subset_std_data <- combine_data[, grep("std", colnames(combine_data), value=TRUE)]
+
+
+Add Subject and Activities columns to the combine - mean and std data 
+read_activities_test_data <- read.table("./UCI HAR Dataset/test/y_test.txt")
+read_subject_test_data <- read.table("./UCI HAR Dataset/test/subject_test.txt")
+
+read_activities_train_data <- read.table("./UCI HAR Dataset/train/y_train.txt")
+read_subject_train_data <- read.table("./UCI HAR Dataset/train/subject_train.txt")
+
+
+Adding Activities and Subject columns to - Mean and Standard Deviation data  
+combine_mean_std_data <- cbind(combine_mean_std_data, act_sub_combine_data)
+   
+Update columns 562 and 563 with values  
+names(combine_mean_std_data)[80]<-"Activity"
+names(combine_mean_std_data)[81]<-"Subject"
+
+
+
+
+3. Uses descriptive activity names to name the activities in the data set
+
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="1"] <- "WALKING"
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="2"] <- "WALKING_UPSTAIRS"
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="3"] <- "WALKING_DOWNSTAIRS"
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="4"] <- "SITTING"
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="5"] <- "STANDING"
+   combine_mean_std_data$Activity[combine_mean_std_data$Activity=="6"] <- "LAYING" 
+
+
+
+4. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+
+Using library(plyr), ddply function we extract generate the required data.
+A for loop loops through all the columns of the combine_mean_std_data to get the mean/average of each column for each activity and each subject.
+
+The output is mean_table and it written to a file as  proj1_tidy_data.txt 
+
+
+
